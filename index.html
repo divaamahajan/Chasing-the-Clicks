@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Click Counter</title>
+</head>
+<body>
+    <h1>Click Count: <span id="count">0</span></h1>
+    <button onclick="incrementCount()">Click me!</button>
+    <script>
+        var count = parseInt(localStorage.getItem("clickCount")) || 0;
+        document.getElementById("count").innerHTML = count;
+        function incrementCount() {
+            count++;
+            localStorage.setItem("clickCount", count);
+            document.getElementById("count").innerHTML = count;
+        }
+    </script>
+</body>
+</html>
