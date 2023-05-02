@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Geolocation Click Counter</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    <h1>Geolocation Click Counter</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <p>Click the button to get your coordinates.</p>
+
+        <button onclick="getLocation()">Try It</button>
+        
+        <p id="demo"></p>
+    </form>
+
+    <script>
+        var x = document.getElementById("demo");
+        
+        function getLocation() {
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+          } else { 
+            x.innerHTML = "Geolocation is not supported by this browser.";
+          }
+        }
+        
+        function showPosition(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            var url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + position.coords.latitude + "&lon=" + position.coords.longitude;
+
+            $.getJSON(url, function(data) {
+                var state = data.address.state ? data.address.state : "";
+                var city = data.address.city ? data.address.city : data.address.town ? data.address.town : "";
+                var country = data.address.country ? data.address.country : "";
+                var location = state + ", " + country;
+                // Send the location to Django view
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/home/", true);
+                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xhttp.send(`location=${location}`);
+            });
+        }
+        
+        function showError(error) {
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              x.innerHTML = "User denied the request for Geolocation."
+              break;
+            case error.POSITION_UNAVAILABLE:
+              x.innerHTML = "Location information is unavailable."
+              break;
+            case error.TIMEOUT:
+              x.innerHTML = "The request to get user location timed out."
+              break;
+            case error.UNKNOWN_ERROR:
+              x.innerHTML = "An unknown error occurred."
+              break;
+          }
+        }
+        </script>
+    <table>
+        <thead>
+            <tr>
+                <th>State</th>
+                <th>Country</th>
+                <th>Count</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for (state, country), count in data %}
+            <tr>
+                <td>{{ state }}</td>
+                <td>{{ country }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div>{{ chart|safe }}</div>
+
+</body>
+</html>

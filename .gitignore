@@ -1,3 +1,5 @@
 config.py
 api.py
-service_account.json
+service_account.
+__pycache__
+chasing_the_clicks_django\clicks_prj\__pycache__
