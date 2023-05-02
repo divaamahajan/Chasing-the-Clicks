@@ -68,7 +68,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'chasing_the_clicks.wsgi.application'
+WSGI_APPLICATION = 'clicks_prj.wsgi.application'
 
 
 # Database
