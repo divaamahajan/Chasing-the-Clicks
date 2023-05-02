@@ -3,32 +3,35 @@ from django.shortcuts import render, redirect
 # Create your views here.
 import plotly.graph_objs as go
 import plotly.offline as opy
-FILENAME = 'database.txt'
+import os
+import json
+
+FILENAME = 'database.json'
+
 def home(request):
     # Initialize a dictionary to hold the state and country counts
     data = {}
 
-    # Open the file containing the counts
-    with open(FILENAME, 'r') as file:
-        for line in file:
-            # Split each line into state, country, and count
-            location, count = line.strip().split(' : ')
-
-            # Add the count to the data dictionary, keyed by state and country
-            data[location] = int(count)
+    if os.path.getsize(FILENAME) > 0:
+        with open(FILENAME, 'r') as file:
+            # Load the data from the file
+            data = json.load(file)
 
     # If the user clicked the button, update the counts and redirect back to the homepage
     if request.method == 'POST':
         # Get the state and country from the form data
         location = request.POST.get('location')
 
-        # Increment the count for the state and country
+        # If the location is None, set it to 'Hidden location'
+        location = location or 'Hidden location'
+
+        # Increment the count for the location
         data[location] = data.get(location, 0) + 1
 
         # Open the file for writing and write the updated counts
         with open(FILENAME, 'w') as file:
-            for location, count in data.items():
-                file.write(f'{location} : {count}\n')
+            # Save the data to the file
+            json.dump(data, file)
 
         # Redirect back to the homepage
         return redirect('home')
@@ -40,7 +43,7 @@ def home(request):
     locations = []
     counts = []
     for loc, count in sorted_data:
-        location.append(loc)
+        locations.append(loc)
         counts.append(count)
 
     # Create a pie chart

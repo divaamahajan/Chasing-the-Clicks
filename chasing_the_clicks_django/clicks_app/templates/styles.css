@@ -1,0 +1,96 @@
+body {
+  background: linear-gradient(to bottom right, #8b0494, #00fbff);
+  font-family: 'Montserrat', sans-serif;
+  color: white;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 48px;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+form {
+  text-align: center;
+  margin-top: 50px;
+}
+
+button {
+  background-color: #050000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+  background-color: #EA425C;
+}
+
+table {
+  color: black;
+  border-collapse: collapse;
+  width: 50%;
+  margin: auto;
+  margin-top: 50px;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+th,
+td {
+  text-align: left;
+  padding: 12px;
+}
+
+th {
+  background-color: #333;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+tr:nth-child(even) {
+  background-color: #F8F8F8;
+}
+
+.chart-container {
+  width: 80%;
+  margin: auto;
+  margin-top: 50px;
+}
+
+.dark-blue {
+  color: #1A237E;
+}
+
+.bright-blue {
+  color: #2196F3;
+}
+
+.vibrant-yellow {
+  color: #FFC107;
+}
+
+.vibrant-red {
+  color: #F44336;
+}
+
+.vibrant-green {
+  color: #4CAF50;
+}
+
+.vibrant-pink {
+  color: #E91E63;
+}

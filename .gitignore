@@ -3,3 +3,5 @@ api.py
 service_account.
 __pycache__
 chasing_the_clicks_django\clicks_prj\__pycache__
+chasing_the_clicks_django/db.sqlite3
+venv

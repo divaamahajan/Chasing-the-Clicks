@@ -1,0 +1,69 @@
+body {
+    background-color: #F8F8F8;
+    font-family: 'Montserrat', sans-serif;
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin-top: 50px;
+    font-size: 48px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+form {
+    text-align: center;
+    margin-top: 50px;
+}
+
+button {
+    background-color: #FD9644;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #FFC288;
+}
+
+table {
+    border-collapse: collapse;
+    width: 50%;
+    margin: auto;
+    margin-top: 50px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+    text-align: left;
+    padding: 12px;
+}
+
+th {
+    background-color: #2D9CDB;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+tr:nth-child(even) {
+    background-color: #F1F1F1;
+}
+
+.chart-container {
+    width: 80%;
+    margin: auto;
+    margin-top: 50px;
+}
