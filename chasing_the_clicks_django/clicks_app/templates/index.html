@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Geolocation Click Counter</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+</style>
+</head>
+<body>
+<main>
+  <h1>Geolocation Click Counter</h1>
+  <h2 style="text-align: center;">Your geoLocation:</h2>
+  <form id="loc-form" method="POST" action="/">
+      <input type="hidden" name="loc" id="loc-input" value="">
+      <h3 id="loc-display"></h3>
+      <button type="submit">Click me!</button>
+  </form>    
+  <script>
+    var geoLocation = "";
+    document.getElementById("loc-input").value = geoLocation;
+    document.getElementById("loc-display").innerHTML = geoLocation;
+    document.getElementById("loc-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+      getLocation(function(location) { 
+        // Do something else with the geoLocation value here
+        document.getElementById("loc-input").value = location;
+        document.getElementById("loc-display").innerHTML = location;
+        fetch("/", {
+          method: "POST",
+          body: new FormData(document.getElementById("loc-form"))
+        }).then(function(response) {
+          console.log("loc updated.");
+          // Call the updateData function to update the table and chart
+          updateData();
+        }).catch(function(error) {
+          console.error("Error updating loc:", error);
+        });
+      });       
+    });    
+    function getLocation(callback) {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          var url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + position.coords.latitude + "&lon=" + position.coords.longitude;
+          $.getJSON(url, function(data) {
+            var state = data.address.state ? data.address.state : "";
+            var country = data.address.country ? data.address.country : "";
+            var geoLocation = state + ", " + country;
+            callback(geoLocation);
+          });
+        });
+      } else {
+        callback("");
+      }
+    }
+    
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          x.innerHTML = "User denied the request for Geolocation."
+          break;
+        case error.POSITION_UNAVAILABLE:
+          x.innerHTML = "Location information is unavailable."
+          break;
+        case error.TIMEOUT:
+          x.innerHTML = "The request to get user geoLocation timed out."
+          break;
+        case error.UNKNOWN_ERROR:
+          x.innerHTML = "An unknown error occurred."
+          break;
+      }
+    }
+
+    </script>
+        <form>
+          <table id="location-table">
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody id = "location-table-body" >
+                {% for location, count in data %}
+                <tr>
+                    <td>{{location }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
+  </form>
+    <form>
+    <div id="chart-container" class="chart-container">{{ chart|safe }}</div>
+    <div>{{ chart|safe }}</div>
+  </form>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js">
+function updateData() {
+  // Send an AJAX request to fetch the updated data
+  fetch("/get-data/")
+    .then(response => response.json())
+    .then(data => {
+      // Update the HTML content of the table body with the updated data
+      const tbody = document.querySelector("#location-table-body");
+      tbody.innerHTML = "";
+
+      for (let location in data) {
+        const count = data[location];
+        const row = `
+          <tr>
+            <td>${location}</td>
+            <td>${count}</td>
+          </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+      }
+
+      // Update the chart with the updated data
+      const chartContainer = document.querySelector("#chart-container");
+      const locations = Object.keys(data);
+      const counts = Object.values(data);
+      const chartData = [{
+        values: counts,
+        labels: locations,
+        type: 'pie',
+        hole: .3
+      }];
+      const layout = { height: 400 };
+      Plotly.newPlot(chartContainer, chartData, layout);
+    })
+    .catch(error => console.error(error));
+}
+
+    
+  </script>
+
+</body>
+</html>

@@ -16,6 +16,8 @@
       {% csrf_token %}
       <h2>Click the button to get in the click race.</h2>
       <button id = "btn" name="location_button" value="clicked" onclick="getLocation()">Click Me</button>
+    </form>
+    <form>
       <p id="location-info"></p>
     </form>
     
@@ -70,22 +72,22 @@
     }
     </script>
         <form>
-    <table>
-      <thead>
-          <tr>
-              <th>Location</th>
-              <th>Count</th>
-          </tr>
-      </thead>
-      <tbody>
-          {% for location, count in data %}
-          <tr>
-              <td>{{location }}</td>
-              <td>{{ count }}</td>
-          </tr>
-          {% endfor %}
-      </tbody>
-    </table>
+          <table>
+            <thead>
+                <tr>
+                    <th>Location</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for location, count in data %}
+                <tr>
+                    <td>{{location }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+          </table>
   </form>
     <form>
 <div class="chart-container">{{ chart|safe }}</div>
