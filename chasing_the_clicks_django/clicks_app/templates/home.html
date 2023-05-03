@@ -12,62 +12,64 @@
 </head>
 <body>
     <h1>Geolocation Click Counter</h1>
-
-    <form method="post">
+    <form method="POST">
       {% csrf_token %}
       <h2>Click the button to get in the click race.</h2>
-  
-      <button onclick="getLocation()">Click Me</button>
-      
-      <p id="demo"></p>
-  </form>
+      <button id = "btn" name="location_button" value="clicked" onclick="getLocation()">Click Me</button>
+      <p id="location-info"></p>
+    </form>
+    
+<script>
+  var locationInfo = document.getElementById("location-info");      
+  var btn =document.getElementById("btn");    
+    function getLocation() {
+    if (navigator.geolocation) 
+        {
+        navigator.geolocation.getCurrentPosition(getPosition, showError)  ;  
+      }    
+    }
+    function showError(error){btn.value = error.code;}
+    function getPosition(position)
+    {  
+        var url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + position.coords.latitude + "&lon=" + position.coords.longitude;
+        $.getJSON(url, function(data) {
+          var state = data.address.state ? data.address.state : "";
+          var country = data.address.country ? data.address.country : "";
+          var location = state + ", " + country;
+          locationInfo.innerHTML = "Location: " + location;
+          btn.value = location;
+          // Send the location to Django view
+          var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+          $.ajax({
+              url: "/",
+              type: "POST",
+              headers: {"X-CSRFToken": csrftoken},
+              data: {location_button: 'clicked', location_key: location,  location_info: locationInfo.innerHTML},
+              dataType: "json"
+          });
 
-    <script>
-        var x = document.getElementById("demo");
-        
-        function getLocation() {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(showPosition, showError);
-          } else { 
-            x.innerHTML = "Geolocation is not supported by this browser.";
-          }
-        }
-        
-        function showPosition(position) {
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-            var url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + position.coords.latitude + "&lon=" + position.coords.longitude;
+        });
+      }
 
-            $.getJSON(url, function(data) {
-                var state = data.address.state ? data.address.state : "";
-                var city = data.address.city ? data.address.city : data.address.town ? data.address.town : "";
-                var country = data.address.country ? data.address.country : "";
-                var location = state + ", " + country;
-                // Send the location to Django view
-                var xhttp = new XMLHttpRequest();
-                xhttp.open("POST", "/home/", true);
-                xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-                xhttp.send(`location=${location}`);
-            });
-        }
-        
-        function showError(error) {
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              x.innerHTML = "User denied the request for Geolocation."
-              break;
-            case error.POSITION_UNAVAILABLE:
-              x.innerHTML = "Location information is unavailable."
-              break;
-            case error.TIMEOUT:
-              x.innerHTML = "The request to get user location timed out."
-              break;
-            case error.UNKNOWN_ERROR:
-              x.innerHTML = "An unknown error occurred."
-              break;
-          }
-        }
-        </script>
+    
+    function showError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          x.innerHTML = "User denied the request for Geolocation."
+          break;
+        case error.POSITION_UNAVAILABLE:
+          x.innerHTML = "Location information is unavailable."
+          break;
+        case error.TIMEOUT:
+          x.innerHTML = "The request to get user location timed out."
+          break;
+        case error.UNKNOWN_ERROR:
+          x.innerHTML = "An unknown error occurred."
+          break;
+      }
+    }
+    </script>
+        <form>
     <table>
       <thead>
           <tr>
@@ -84,10 +86,14 @@
           {% endfor %}
       </tbody>
     </table>
-
+  </form>
+    <form>
 <div class="chart-container">{{ chart|safe }}</div>
 
     <div>{{ chart|safe }}</div>
+
+  </form>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 </body>
 </html>

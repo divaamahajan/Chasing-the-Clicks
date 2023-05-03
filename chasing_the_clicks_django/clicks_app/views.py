@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-
-# Create your views here.
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.middleware import csrf
 import plotly.graph_objs as go
 import plotly.offline as opy
 import os
@@ -8,7 +8,10 @@ import json
 
 FILENAME = 'database.json'
 
+@csrf_exempt
 def home(request):
+    # do some processing here
+    csrf_token = csrf.get_token(request)
     # Initialize a dictionary to hold the state and country counts
     data = {}
 
@@ -19,8 +22,13 @@ def home(request):
 
     # If the user clicked the button, update the counts and redirect back to the homepage
     if request.method == 'POST':
-        # Get the state and country from the form data
-        location = request.POST.get('location')
+        # content_type = request.META.get('CONTENT_TYPE')
+        # print(f"request: {request}\nMeta:{request.META}\n conent :{content_type}\n\n")
+        # data = json.loads(request.body)
+        # location = data.get('location')
+        # # Get the state and country from the form data
+        location = request.POST.get('location_key')
+        print(f"request:{request}\nPOST:{request.POST}\n\n\n")
 
         # If the location is None, set it to 'Hidden location'
         location = location or 'Hidden location'
@@ -53,4 +61,6 @@ def home(request):
     chart = opy.plot(fig, auto_open=False, output_type='div')
 
     # Render the homepage template with the data and chart
-    return render(request, 'home.html', {'data': sorted_data, 'chart': chart})
+    response =  render(request, 'home.html', {'data': sorted_data, 'chart': chart, 'csrf_token': csrf_token})
+    # response.set_cookie('csrftoken', csrf_token)
+    return response
