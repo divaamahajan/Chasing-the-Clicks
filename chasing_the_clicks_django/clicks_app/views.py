@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.urls import reverse
 from django.middleware import csrf
 import plotly.graph_objs as go
 import plotly.offline as opy
@@ -7,65 +8,40 @@ import os
 import json
 
 FILENAME = 'database.json'
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .models import ClickCount
 
 @csrf_exempt
-def home(request):
-    # do some processing here
-    csrf_token = csrf.get_token(request)
-    # Initialize a dictionary to hold the state and country counts
-    data = {}
+def save_location_count(request):
+    if request.method == 'POST':
+        geoLocation = request.POST.get('geoLocation')
+        print('\n\n', geoLocation)
+        geoLocation = geoLocation or 'Hidden location'
+        count = request.POST.get('count')
+        print(geoLocation , count)
+        update_json(geoLocation,count)
 
+def update_json(geoLocation,count):
     if os.path.getsize(FILENAME) > 0:
         with open(FILENAME, 'r') as file:
             # Load the data from the file
             data = json.load(file)
 
-    # If the user clicked the button, update the counts and redirect back to the homepage
-    if request.method == 'POST':
-        # Get the state and country from the form data
-        location = request.POST.get('loc')
-        print(f"\n\nrequest:{request}\nPOST:{request.POST}\n\n")
+    # Increment the count for the location
+    data[geoLocation] = data.get(geoLocation, 0) + int(count)
+    print(f"{geoLocation} : {data[geoLocation]}")
 
-        # If the location is None, set it to 'Hidden location'
-        location = location or 'Hidden location'
-
-        # Increment the count for the location
-        data[location] = data.get(location, 0) + 1
-        print(f"{location} : {data[location]}")
-
-        # Open the file for writing and write the updated counts
-        with open(FILENAME, 'w') as file:
-            # Save the data to the file
-            json.dump(data, file)
-
-        # Redirect back to the homepage
-        return redirect('index.html')
-
-    # Sort the data by count in descending order
-    sorted_data = sorted(data.items(), key=lambda x: x[1], reverse=True)
-
-    # Extract the state and country names and their corresponding counts as separate lists
-    locations = []
-    counts = []
-    for loc, count in sorted_data:
-        locations.append(loc)
-        counts.append(count)
-
-    # Create a pie chart
-    fig = go.Figure(data=[go.Pie(labels=locations, values=counts, hole=.3)])
-
-    # Convert the chart to HTML
-    chart = opy.plot(fig, auto_open=False, output_type='div')
-
-    # Render the homepage template with the data and chart
-    response =  render(request, 'index.html', {'data': sorted_data, 'chart': chart, 'csrf_token': csrf_token})
-    # response.set_cookie('csrftoken', csrf_token)
-    return response
+    # Open the file for writing and write the updated counts
+    with open(FILENAME, 'w') as file:
+        # Save the data to the file
+        json.dump(data, file)
 
 
-from django.http import JsonResponse
-
-def get_data(request):
+@csrf_exempt
+def get_stats(request):
+    print("hello stats")
     if os.path.getsize(FILENAME) > 0:
         with open(FILENAME, 'r') as file:
             # Load the data from the file
@@ -87,8 +63,15 @@ def get_data(request):
             # Convert the chart to HTML
             chart = opy.plot(fig, auto_open=False, output_type='div')
 
-            # Return the updated data as JSON
-            return JsonResponse({'data': dict(sorted_data), 'chart': chart})
+    # Render the homepage template with the data and chart
+    response =  render(request, 'stats.html', {'data': sorted_data, 'chart': chart})
+    return response
 
-    # If the file is empty, return an empty JSON object
-    return JsonResponse({})
+@csrf_exempt
+def clickCounter(request):
+    # homepage
+    if request.method == 'POST':
+        save_location_count(request)
+        return redirect(('get_stats'))
+    return render(request, 'clickCounter.html')
+

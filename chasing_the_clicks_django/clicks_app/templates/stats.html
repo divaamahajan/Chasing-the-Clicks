@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Geolocation Click Counter</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <!-- <link href="https://fonts.googleapis.com/css?family=Permanent+Marker&display=swap" rel="stylesheet"> -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        
+.home-text {
+  margin-left: 5px;
+  font-size: 1.2em;
+  font-family: "Comic Sans MS", cursive, sans-serif; 
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(236, 231, 231, 0.4);
+  text-decoration: none; /* remove the underline from the link */
+}
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Geolocation statistics</h1>
+        <a href="/" class="home-button">
+            <img src="{% static 'images/home.png' %}" alt="Home" width="50" height="50">
+            <span class="home-text">Home</span>
+          </a>              
+        <form>
+            <table id="location-table">
+                <thead>
+                    <tr>
+                        <th>Location</th>
+                        <th>Count</th>
+                    </tr>
+                </thead>
+                <tbody id="location-table-body">
+                    {% for geoLocation, count in data %}
+                    <tr>
+                        <td>{{ geoLocation }}</td>
+                        <td>{{ count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+        <form>
+            <div id="chart-container" class="chart-container">{{ chart|safe }}</div>
+            <div>{{ chart|safe }}</div>
+        </form>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</body>
+</html>

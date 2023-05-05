@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'chasing_the_clicks_django\clicks_app',
+    'clicks_app',
 ]
 
 MIDDLEWARE = [

@@ -94,3 +94,39 @@ tr:nth-child(even) {
 .vibrant-pink {
   color: #E91E63;
 }
+
+.home-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: inline-flex;
+  align-items: right;
+  justify-content: right;
+  width: 50px;
+  height: 50px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.home-button a {
+  color: inherit;
+}
+
+.home-button img {
+  width: 30px;
+  height: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.home-text {
+  margin-left: 5px;
+  font-size: 1.2em;
+  font-family: "Comic Sans MS", cursive, sans-serif; 
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(236, 231, 231, 0.4);
+  text-decoration: none; /* remove the underline from the link */
+}
+
+
+

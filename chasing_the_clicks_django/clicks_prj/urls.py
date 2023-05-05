@@ -20,9 +20,14 @@ from clicks_app import views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('/', views.home, name='home'),
-    path('index.html/', views.home, name='home'),
-    path('get-data/', views.get_data, name='get-data'),
+    path('savejson', views.save_location_count, name='save_location_count'),
+    path('stats.html', views.get_stats, name='get_stats'),
+    path('get_stats', views.get_stats, name='get_stats'),
+    # path('', views.home, name='home'),
+    path('clickCounter.html', views.clickCounter, name='clickCounter'),
+    path('/', views.clickCounter, name='clickCounter'),
+    path('', views.clickCounter, name='clickCounter'),
+    # path('index.html/', views.home, name='home'),
+    # path('get-data/', views.get_data, name='get-data'),
 ]
 urlpatterns += staticfiles_urlpatterns()

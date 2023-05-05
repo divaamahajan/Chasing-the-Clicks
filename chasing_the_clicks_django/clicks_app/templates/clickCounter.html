@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Geolocation Click Counter</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        .note-container {
+          position: fixed;
+          top: 50%;
+          left: 20px;
+          transform: translateY(-50%);
+          width: 400px;
+          padding: 20px;
+          background-color: #4e1280;
+          border: 1px solid #ccc;
+          font-style: italic;
+          font-family: "Comic Sans MS", cursive, sans-serif;
+        }
+      </style>
+</head>
+<body>
+    <header>
+        <h1>Click Counter</h1>
+    </header>
+    <main>
+        <br>
+        <div class="note-container">
+            <h2>Welcome to our website!</h2>
+            <p>We're glad you're here.</p>
+            <p>Don't worry about losing your click count when you refresh the page. It will stay right where it is.</p>
+            <p>If you'd like to store your count and start fresh, simply click on the "Save" button. By doing so, you'll be adding your current click counts to your location in our database.</p>
+            <p>So go ahead, keep clicking and exploring our website. And when you're ready to save your count, just hit that button!</p>
+          </div>
+          <br>
+        <h2 style="text-align: center;">Your Click Count:</h2>
+        <h3 id="count" style="text-align: center;">0</h3>
+        <button onclick="getLocationAndIncrement()" style="display: block; margin: 0 auto; font-size: 24px; padding: 15px 30px;">Click me!</button>
+        <br><br>
+        <p id="demo"></p>
+        <h2 id="geoLocation" style="text-align: center;">Your geoLocation:</h2> 
+        <script>
+         
+        var x = document.getElementById("demo");
+        var count = parseInt(localStorage.getItem("clickCount")) || 0;
+        var geoLoc = localStorage.getItem("loc") || "Hidden Location";
+        document.getElementById("count").innerHTML = count;
+        document.getElementById("geoLocation").innerHTML = geoLoc
+        
+        function getLocationAndIncrement() {
+            incrementCount();
+            getLocation();
+        }
+        
+        function incrementCount() {
+            count++;
+            localStorage.setItem("clickCount", count);
+            document.getElementById("count").innerHTML = count;
+        }
+        function resetCount() {
+        try {
+            count = 0;
+            localStorage.setItem("clickCount", count);
+            document.getElementById("count").innerHTML = count;
+        } catch (e) {
+            console.error("Error resetting count:", e);
+            alert("There was an error resetting the count. Please try again later.");
+        }
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else { 
+                x.innerHTML = "Geolocation is not supported by this browser.";
+            }
+        }
+        
+        function showPosition(position) {              
+            var url = "https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=" + position.coords.latitude + "&lon=" + position.coords.longitude;
+            
+            $.getJSON(url, function(data) {
+                var state = data.address.state ? data.address.state : "";
+                var city = data.address.city ? data.address.city : data.address.town ? data.address.town : "";
+                var country = data.address.country ? data.address.country : "";
+                var geoLoc = city + ", " + state + ", " + country;
+                localStorage.setItem("loc", geoLoc);
+                document.getElementById("geoLocation-input").value = geoLoc;     
+                geoLocation.innerHTML = geoLoc;           
+            });
+        }
+        
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    x.innerHTML = "User denied the request for Geolocation."
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    x.innerHTML = "Location information is unavailable."
+                    break;
+                case error.TIMEOUT:
+                    x.innerHTML = "The request to get user location timed out."
+                    break;
+                case error.UNKNOWN_ERROR:
+                    x.innerHTML = "An unknown error occurred."
+                    break;
+            }
+        }
+        
+        </script>         
+        <form method="POST" id="my-form">
+            {% csrf_token %}
+            <input type="hidden" name="count" id="count-input">
+            <input type="hidden" name="geoLocation" id="geoLocation-input" value='{{geoLoc}}'>
+            <!-- <button type="submit" onclick="resetCount()">Save</button> -->
+            <button type="button" onclick="submitForm()">Save</button>
+            <script>
+                // Retrieve the latest count and set it as the value of the hidden input field
+                document.getElementById("count-input").value = document.getElementById("count").textContent;
+                // Assign the value of geoLoc to the hidden input field
+                document.getElementById("geoLocation-input").value = geoLoc;
+                function submitForm() {
+                    // Retrieve the latest count and set it as the value of the hidden input field
+                    document.getElementById("count-input").value = document.getElementById("count").textContent;
+                    // Assign the value of geoLoc to the hidden input field
+                    document.getElementById("geoLocation-input").value = geoLoc;
+
+                    // Submit the form
+                    document.getElementById("my-form").submit();
+                    resetCount();
+                    }
+
+            </script>             
+        </form>       
+        
+        <br>
+        <div style="text-align: center;">
+            <button onclick="location.href='/stats.html'">Get Stats</button>
+          </div>
+          
+    </main>
+    <footer>
+        <p>&copy; 2023 Chasing the Clicks</p>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+        function saveLocationCount() {
+            var geoLocation = geoLocation.innerHTML.trim();
+            var formData = new FormData();
+            formData.append("location", geoLocation);
+            formData.append("count", count);
+            formData.append("{% csrf_token %}", "{{ csrf_token }}");
+            
+            fetch("/save", {
+                method: "POST",
+                body: formData,
+            });
+        }
+        
+    </script>
+</body>
+</html>
