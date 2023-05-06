@@ -1,69 +1,73 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
+  <head>
+    <meta charset="utf-8" />
     <title>Geolocation Click Counter</title>
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
     <!-- <link href="https://fonts.googleapis.com/css?family=Permanent+Marker&display=swap" rel="stylesheet"> -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <style>
-        
-.home-button {
-  position: fixed;
-  top: 100px;
-  left: 250px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 70px;
-  height: 70px;
-  background-color: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255, 1, 1, 0.2);
-}
-.home-text {
-  margin-left: 5px;
-  font-size: 1.2em;
-  font-family: "Comic Sans MS", cursive, sans-serif; 
-  justify-content: center;
-  color: #000000;
-  text-shadow: 0 2px 4px rgba(236, 231, 231, 0.4);
-  text-decoration: none; /* remove the underline from the link */
-}
+      .home-button {
+        position: fixed;
+        top: 100px;
+        left: 250px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 70px;
+        height: 70px;
+        background-color: #fff;
+        border-radius: 50%;
+        box-shadow: 0 0 10px rgba(255, 1, 1, 0.2);
+      }
+      .home-text {
+        margin-left: 5px;
+        font-size: 1.2em;
+        font-family: "Comic Sans MS", cursive, sans-serif;
+        justify-content: center;
+        color: #000000;
+        text-shadow: 0 2px 4px rgba(236, 231, 231, 0.4);
+        text-decoration: none; /* remove the underline from the link */
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <main>
-        <h1>Geolocation statistics</h1>
-        <a href="/" class="home-button">
-            <img src="{% static 'images/home.png' %}" alt="Home" width="50" height="50">
-            <span class="home-text">Home</span>
-          </a>              
-        <form>
-            <table id="location-table">
-                <thead>
-                    <tr>
-                        <th>Location</th>
-                        <th>Count</th>
-                    </tr>
-                </thead>
-                <tbody id="location-table-body">
-                    {% for geoLocation, count in data %}
-                    <tr>
-                        <td>{{ geoLocation }}</td>
-                        <td>{{ count }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </form>
-        <form>
-            <div id="chart-container" class="chart-container">{{ chart|safe }}</div>
-            <div>{{ chart|safe }}</div>
-        </form>
+      <h1>Geolocation statistics</h1>
+      <a href="/" class="home-button">
+        <img
+          src="{% static 'images/home.png' %}"
+          alt="Home"
+          width="50"
+          height="50"
+        />
+        <span class="home-text">Home</span>
+      </a>
+      <form>
+        <table id="location-table">
+          <thead>
+            <tr>
+              <th>Location</th>
+              <th>Count</th>
+            </tr>
+          </thead>
+          <tbody id="location-table-body">
+            {% for geoLocation, count in data %}
+            <tr>
+              <td>{{ geoLocation }}</td>
+              <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </form>
+      <form>
+        <div id="chart-container" class="chart-container">{{ chart|safe }}</div>
+        <div>{{ chart|safe }}</div>
+      </form>
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-</body>
+  </body>
 </html>
